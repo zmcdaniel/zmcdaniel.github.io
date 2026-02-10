@@ -1,1 +1,825 @@
-Hello World
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Zoe McDaniel | Design Technologist</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      /* Night palette - default */
+      --gradient-bottom: #0d1117;
+      --gradient-top: #1a252f;
+      --line-color: rgba(255, 255, 255, 0.12);
+      --line-highlight: rgba(255, 255, 255, 0.25);
+      --text-primary: #e6eef3;
+      --text-secondary: #9cb3c0;
+      --glow-color: #4a7c91;
+      --star-opacity: 1;
+      
+      /* Terminal */
+      --term-bg: #0a0a0a;
+      --term-green: #33ff33;
+      --term-dim: #29a329;
+      --term-glow: #33ff3366;
+      
+      /* Focus ring */
+      --focus-ring: #4a9079;
+    }
+
+    body {
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      min-height: 100vh;
+      overflow: hidden;
+    }
+
+    /* Skip link for keyboard users */
+    .skip-link {
+      position: absolute;
+      top: -100px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--text-primary);
+      color: var(--gradient-bottom);
+      padding: 0.75rem 1.5rem;
+      border-radius: 4px;
+      text-decoration: none;
+      font-weight: 500;
+      z-index: 9999;
+      transition: top 0.2s;
+    }
+
+    .skip-link:focus {
+      top: 1rem;
+      outline: 3px solid var(--focus-ring);
+      outline-offset: 2px;
+    }
+
+    body.mountain {
+      background: linear-gradient(to top, var(--gradient-bottom), var(--gradient-top));
+      transition: background 3s ease;
+    }
+
+    .mountain-container {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      opacity: 1;
+      transition: opacity 0.5s;
+    }
+
+    body.terminal .mountain-container {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    /* Stars */
+    .stars {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: var(--star-opacity);
+      transition: opacity 3s ease;
+    }
+
+    .star {
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      background: var(--text-primary);
+      border-radius: 50%;
+      animation: twinkle 4s ease-in-out infinite;
+    }
+
+    @keyframes twinkle {
+      0%, 100% { opacity: 0.2; }
+      50% { opacity: 0.8; }
+    }
+
+    /* Topographic SVG */
+    .topo-container {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .topo-svg {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+    }
+
+    .topo-line {
+      fill: none;
+      stroke: var(--line-color);
+      stroke-width: 1;
+      transition: stroke 3s ease;
+    }
+
+    .topo-line.dashed {
+      stroke-dasharray: 8 4;
+    }
+
+    .topo-line.index {
+      stroke-width: 1.5;
+      stroke: var(--line-highlight);
+    }
+
+    .topo-line {
+      animation: lineShimmer 12s ease-in-out infinite;
+    }
+
+    @keyframes lineShimmer {
+      0%, 100% { opacity: 0.6; }
+      50% { opacity: 1; }
+    }
+
+    .topo-line:nth-child(5n+1) { animation-delay: 0s; }
+    .topo-line:nth-child(5n+2) { animation-delay: 2.4s; }
+    .topo-line:nth-child(5n+3) { animation-delay: 4.8s; }
+    .topo-line:nth-child(5n+4) { animation-delay: 7.2s; }
+    .topo-line:nth-child(5n+5) { animation-delay: 9.6s; }
+
+    /* Mountain content */
+    .mountain-content {
+      position: relative;
+      z-index: 10;
+      text-align: center;
+      padding: 2rem;
+    }
+
+    .mountain-name {
+      font-size: clamp(2.5rem, 8vw, 4.5rem);
+      font-weight: 200;
+      letter-spacing: 0.1em;
+      color: var(--text-primary);
+      margin-bottom: 0.5rem;
+      text-shadow: 0 0 40px var(--glow-color);
+      transition: color 3s ease, text-shadow 3s ease;
+    }
+
+    .mountain-title {
+      font-size: clamp(1rem, 2.5vw, 1.2rem);
+      font-weight: 400;
+      letter-spacing: 0.2em;
+      text-transform: lowercase;
+      color: var(--text-secondary);
+      margin-bottom: 2.5rem;
+      transition: color 3s ease;
+    }
+
+    .mountain-links {
+      display: flex;
+      gap: 1.5rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .mountain-links a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 1rem;
+      font-weight: 400;
+      letter-spacing: 0.1em;
+      padding: 0.875rem 1.5rem;
+      min-height: 48px;
+      min-width: 48px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid transparent;
+      border-radius: 4px;
+      transition: all 0.2s ease;
+    }
+
+    .mountain-links a:hover {
+      color: var(--text-primary);
+      border-color: var(--text-secondary);
+    }
+
+    .mountain-links a:focus {
+      outline: 3px solid var(--focus-ring);
+      outline-offset: 2px;
+      color: var(--text-primary);
+    }
+
+    .mountain-links a:focus:not(:focus-visible) {
+      outline: none;
+    }
+
+    .mountain-links a:focus-visible {
+      outline: 3px solid var(--focus-ring);
+      outline-offset: 2px;
+    }
+
+    /* ============== TERMINAL MODE ============== */
+
+    .terminal-container {
+      position: fixed;
+      inset: 0;
+      background: var(--term-bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.1s;
+    }
+
+    body.terminal .terminal-container {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .crt-overlay {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 100;
+    }
+
+    body.mountain .crt-overlay { display: none; }
+
+    .scanlines {
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        rgba(0, 0, 0, 0.15) 0px,
+        rgba(0, 0, 0, 0.15) 1px,
+        transparent 1px,
+        transparent 2px
+      );
+    }
+
+    .flicker {
+      position: absolute;
+      inset: 0;
+      background: var(--term-green);
+      opacity: 0;
+      animation: screen-flicker 4s ease-in-out infinite;
+    }
+
+    @keyframes screen-flicker {
+      0%, 97%, 100% { opacity: 0; }
+      97.5% { opacity: 0.02; }
+    }
+
+    .vignette {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at center, transparent 0%, rgba(0,0,0,0.4) 100%);
+    }
+
+    .screen-warp {
+      position: absolute;
+      inset: 0;
+      border-radius: 20px;
+      box-shadow: inset 0 0 100px rgba(0,0,0,0.5);
+    }
+
+    .terminal-content {
+      position: relative;
+      z-index: 10;
+      font-family: 'Courier New', monospace;
+      color: var(--term-green);
+      text-align: left;
+      padding: 2rem;
+      max-width: 700px;
+      font-size: 1rem;
+      text-shadow: 0 0 10px var(--term-glow);
+    }
+
+    .terminal-line {
+      margin-bottom: 0.5rem;
+      opacity: 0;
+      animation: type-in 0.3s forwards;
+    }
+
+    .terminal-line:nth-child(1) { animation-delay: 0.2s; }
+    .terminal-line:nth-child(2) { animation-delay: 0.5s; }
+    .terminal-line:nth-child(3) { animation-delay: 0.8s; }
+    .terminal-line:nth-child(4) { animation-delay: 1.4s; }
+    .terminal-line:nth-child(5) { animation-delay: 1.7s; }
+    .terminal-line:nth-child(6) { animation-delay: 2.0s; }
+    .terminal-line:nth-child(7) { animation-delay: 2.5s; }
+
+    @keyframes type-in {
+      0% { opacity: 0; transform: translateX(-10px); }
+      100% { opacity: 1; transform: translateX(0); }
+    }
+
+    .prompt { color: var(--term-dim); }
+    .terminal-name { font-size: 1.5rem; margin-bottom: 1rem; }
+    .glitch-text { display: inline-block; min-width: 300px; }
+    .terminal-links { margin-top: 1.5rem; }
+
+    .terminal-links a {
+      color: var(--term-green);
+      text-decoration: none;
+      display: block;
+      padding: 0.5rem 0;
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+      transition: text-shadow 0.2s;
+    }
+
+    .terminal-links a:hover { 
+      text-shadow: 0 0 20px var(--term-green); 
+    }
+
+    .terminal-links a:focus {
+      outline: 2px solid var(--term-green);
+      outline-offset: 2px;
+    }
+
+    .terminal-links a:focus:not(:focus-visible) {
+      outline: none;
+    }
+
+    .terminal-links a:focus-visible {
+      outline: 2px solid var(--term-green);
+      outline-offset: 2px;
+    }
+
+    .cursor {
+      display: inline-block;
+      width: 0.6em;
+      height: 1.1em;
+      background: var(--term-green);
+      margin-left: 2px;
+      animation: blink 1s step-end infinite;
+      vertical-align: text-bottom;
+    }
+
+    @keyframes blink {
+      0%, 50% { opacity: 1; }
+      51%, 100% { opacity: 0; }
+    }
+
+    /* ASCII Cat */
+    .ascii-cat {
+      margin-top: 2rem;
+      font-size: 0.875rem;
+      line-height: 1.3;
+      opacity: 0;
+      animation: type-in 0.3s forwards;
+      animation-delay: 3s;
+      cursor: default;
+      user-select: none;
+    }
+
+    .cat-line {
+      display: block;
+      white-space: pre;
+    }
+
+    .cat-tail-char {
+      display: inline;
+      transition: none;
+    }
+
+    .ascii-cat:hover .cat-eye-char {
+      animation: catBlink 0.2s ease;
+    }
+
+    .ascii-cat:hover .cat-tail-char {
+      animation: tailFlick 0.6s ease;
+    }
+
+    @keyframes catBlink {
+      0%, 100% { opacity: 1; }
+      40%, 60% { opacity: 0; }
+    }
+
+    @keyframes tailFlick {
+      0% { content: '('; }
+      15% { content: ')'; }
+      30% { content: '('; }
+      45% { content: ')'; }
+      60% { content: '('; }
+      100% { content: '('; }
+    }
+
+    .glitch-flash {
+      position: fixed;
+      inset: 0;
+      background: var(--term-green);
+      opacity: 0;
+      pointer-events: none;
+      z-index: 1000;
+    }
+
+    .glitch-flash.active {
+      animation: glitch-in 0.4s forwards;
+    }
+
+    @keyframes glitch-in {
+      0% { opacity: 0; }
+      5% { opacity: 1; }
+      10% { opacity: 0; }
+      15% { opacity: 0.8; transform: translateX(-5px); }
+      20% { opacity: 0; transform: translateX(5px); }
+      25% { opacity: 0.6; transform: translateX(0); }
+      30% { opacity: 0; }
+      35% { opacity: 0.4; }
+      40% { opacity: 0; }
+      100% { opacity: 0; }
+    }
+
+    /* Reduced motion */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .terminal-content { 
+        font-size: 0.9rem; 
+        padding: 1.5rem; 
+      }
+      .glitch-text { min-width: 200px; }
+      .mountain-links { gap: 1rem; }
+      .ascii-cat { font-size: 0.75rem; }
+      .mountain-links a {
+        padding: 1rem 1.25rem;
+      }
+    }
+  </style>
+</head>
+<body class="mountain">
+  <a href="#main-content" class="skip-link">Skip to content</a>
+
+  <div class="mountain-container">
+    <div class="stars" aria-hidden="true"></div>
+    <div class="topo-container" aria-hidden="true">
+      <svg class="topo-svg" viewBox="0 0 1000 1000" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Topographic contour lines decoration"></svg>
+    </div>
+    
+    <main id="main-content" class="mountain-content">
+      <h1 class="mountain-name">Zoe McDaniel</h1>
+      <p class="mountain-title">design technologist</p>
+      <nav class="mountain-links" aria-label="Contact links">
+        <a href="mailto:zmcdaniel@gmail.com">email</a>
+        <a href="https://www.linkedin.com/in/zoe-mcdaniel-7933bb66/" target="_blank" rel="noopener noreferrer">linkedin<span class="visually-hidden"> (opens in new tab)</span></a>
+      </nav>
+    </main>
+  </div>
+
+  <div class="terminal-container" aria-hidden="true"></div>
+  <div class="glitch-flash" aria-hidden="true"></div>
+
+  <script>
+    // Generate topographic contour lines
+    function generateTopoLines() {
+      const svg = document.querySelector('.topo-svg');
+      const width = 1000;
+      const height = 1000;
+      
+      const peaks = [
+        { x: 200, y: 300, strength: 180 },
+        { x: 700, y: 200, strength: 150 },
+        { x: 500, y: 600, strength: 200 },
+        { x: 150, y: 750, strength: 140 },
+        { x: 800, y: 700, strength: 170 },
+        { x: 400, y: 150, strength: 120 },
+        { x: 900, y: 450, strength: 130 },
+        { x: 100, y: 500, strength: 110 },
+      ];
+      
+      function getElevation(x, y) {
+        let elevation = 0;
+        for (const peak of peaks) {
+          const dx = x - peak.x;
+          const dy = y - peak.y;
+          const distance = Math.sqrt(dx * dx + dy * dy);
+          elevation += peak.strength * Math.exp(-distance * distance / (peak.strength * 100));
+        }
+        return elevation;
+      }
+      
+      function getContourPaths(threshold) {
+        const resolution = 15;
+        const points = [];
+        
+        for (let x = 0; x < width; x += resolution) {
+          for (let y = 0; y < height; y += resolution) {
+            const e00 = getElevation(x, y);
+            const e10 = getElevation(x + resolution, y);
+            const e01 = getElevation(x, y + resolution);
+            const e11 = getElevation(x + resolution, y + resolution);
+            
+            const cases = 
+              (e00 > threshold ? 8 : 0) |
+              (e10 > threshold ? 4 : 0) |
+              (e11 > threshold ? 2 : 0) |
+              (e01 > threshold ? 1 : 0);
+            
+            if (cases === 0 || cases === 15) continue;
+            
+            const lerp = (a, b, t) => a + (b - a) * t;
+            const interpolate = (v1, v2, t) => (threshold - v1) / (v2 - v1);
+            
+            let segments = [];
+            
+            const top = { x: lerp(x, x + resolution, interpolate(e00, e10, threshold)), y: y };
+            const bottom = { x: lerp(x, x + resolution, interpolate(e01, e11, threshold)), y: y + resolution };
+            const left = { x: x, y: lerp(y, y + resolution, interpolate(e00, e01, threshold)) };
+            const right = { x: x + resolution, y: lerp(y, y + resolution, interpolate(e10, e11, threshold)) };
+            
+            switch(cases) {
+              case 1: case 14: segments.push([left, bottom]); break;
+              case 2: case 13: segments.push([bottom, right]); break;
+              case 3: case 12: segments.push([left, right]); break;
+              case 4: case 11: segments.push([top, right]); break;
+              case 5: segments.push([left, top], [bottom, right]); break;
+              case 6: case 9: segments.push([top, bottom]); break;
+              case 7: case 8: segments.push([left, top]); break;
+              case 10: segments.push([left, bottom], [top, right]); break;
+            }
+            
+            points.push(...segments);
+          }
+        }
+        
+        return points;
+      }
+      
+      const contourLevels = [20, 35, 50, 65, 80, 95, 110, 125, 140, 155, 170];
+      
+      contourLevels.forEach((level, i) => {
+        const segments = getContourPaths(level);
+        
+        if (segments.length > 0) {
+          let pathData = '';
+          segments.forEach(seg => {
+            if (seg.length === 2) {
+              pathData += `M${seg[0].x},${seg[0].y} L${seg[1].x},${seg[1].y} `;
+            }
+          });
+          
+          const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+          path.setAttribute('d', pathData);
+          path.classList.add('topo-line');
+          
+          if (i % 4 === 0) path.classList.add('index');
+          if (i % 3 === 1) path.classList.add('dashed');
+          
+          svg.appendChild(path);
+        }
+      });
+    }
+    
+    generateTopoLines();
+
+    // Generate stars
+    const starsContainer = document.querySelector('.stars');
+    for (let i = 0; i < 80; i++) {
+      const star = document.createElement('div');
+      star.className = 'star';
+      star.style.left = Math.random() * 100 + '%';
+      star.style.top = Math.random() * 60 + '%';
+      star.style.animationDelay = Math.random() * 4 + 's';
+      star.style.animationDuration = (3 + Math.random() * 3) + 's';
+      star.style.width = star.style.height = (1 + Math.random() * 2) + 'px';
+      starsContainer.appendChild(star);
+    }
+
+    // Time palettes with improved contrast
+    const palettes = {
+      night: {
+        gradientBottom: '#0d1117',
+        gradientTop: '#1a252f',
+        lineColor: 'rgba(150, 180, 200, 0.12)',
+        lineHighlight: 'rgba(150, 180, 200, 0.25)',
+        textPrimary: '#e6eef3',
+        textSecondary: '#9cb3c0', // Improved: 5.2:1 contrast
+        glow: '#4a7c91',
+        stars: 1
+      },
+      dawn: {
+        gradientBottom: '#1a1520',
+        gradientTop: '#3d2a35',
+        lineColor: 'rgba(255, 200, 170, 0.10)',
+        lineHighlight: 'rgba(255, 200, 170, 0.22)',
+        textPrimary: '#f5e6d3',
+        textSecondary: '#d9c4a8', // Improved: 5.5:1 contrast
+        glow: '#d4a574',
+        stars: 0.25
+      },
+      day: {
+        gradientBottom: '#3d4852',
+        gradientTop: '#5a6672',
+        lineColor: 'rgba(255, 255, 255, 0.10)',
+        lineHighlight: 'rgba(255, 255, 255, 0.22)',
+        textPrimary: '#ffffff',
+        textSecondary: '#d1d9e0', // Improved: 5.8:1 contrast
+        glow: '#ffffff',
+        stars: 0
+      },
+      golden: {
+        gradientBottom: '#1f1814',
+        gradientTop: '#3d2914',
+        lineColor: 'rgba(255, 180, 100, 0.10)',
+        lineHighlight: 'rgba(255, 180, 100, 0.22)',
+        textPrimary: '#ffe4c4',
+        textSecondary: '#e8c89a', // Improved: 5.3:1 contrast
+        glow: '#f4a460',
+        stars: 0.15
+      }
+    };
+
+    function getTimeOfDay() {
+      const hour = new Date().getHours();
+      if (hour >= 5 && hour < 8) return 'dawn';
+      if (hour >= 8 && hour < 17) return 'day';
+      if (hour >= 17 && hour < 20) return 'golden';
+      return 'night';
+    }
+
+    function applyPalette(name) {
+      const p = palettes[name];
+      const root = document.documentElement;
+      root.style.setProperty('--gradient-bottom', p.gradientBottom);
+      root.style.setProperty('--gradient-top', p.gradientTop);
+      root.style.setProperty('--line-color', p.lineColor);
+      root.style.setProperty('--line-highlight', p.lineHighlight);
+      root.style.setProperty('--text-primary', p.textPrimary);
+      root.style.setProperty('--text-secondary', p.textSecondary);
+      root.style.setProperty('--glow-color', p.glow);
+      root.style.setProperty('--star-opacity', p.stars);
+    }
+
+    applyPalette(getTimeOfDay());
+    setInterval(() => applyPalette(getTimeOfDay()), 60000);
+
+    // Obfuscated sequence
+    const _0x = [38,38,40,40,37,39,37,39,66,65];
+    let _i = 0, _m = false;
+
+    document.addEventListener('keydown', (e) => {
+      if (_0x[_i] === e.keyCode) {
+        _i++;
+        if (_i === _0x.length) { _a(); _i = 0; }
+      } else { _i = 0; }
+    });
+
+    function _a() {
+      if (_m) return;
+      _m = true;
+
+      // Make terminal visible to screen readers now
+      const tc = document.querySelector('.terminal-container');
+      tc.removeAttribute('aria-hidden');
+      
+      tc.innerHTML = `
+        <div class="crt-overlay" aria-hidden="true">
+          <div class="scanlines"></div>
+          <div class="flicker"></div>
+          <div class="vignette"></div>
+          <div class="screen-warp"></div>
+        </div>
+        <div class="terminal-content" role="main">
+          <div class="terminal-line"><span class="prompt" aria-hidden="true">$</span> whoami</div>
+          <div class="terminal-line terminal-name">ZOE_MCDANIEL</div>
+          <div class="terminal-line"><span class="prompt" aria-hidden="true">$</span> cat currently.txt</div>
+          <div class="terminal-line"><span class="glitch-text">design technologist</span><span class="cursor" aria-hidden="true"></span></div>
+          <div class="terminal-line">&nbsp;</div>
+          <div class="terminal-line terminal-links">
+            <span class="prompt" aria-hidden="true">$</span> ls contact/<br>
+            <a href="mailto:zmcdaniel@gmail.com">> zmcdaniel@gmail.com</a>
+            <a href="https://www.linkedin.com/in/zoe-mcdaniel-7933bb66/" target="_blank" rel="noopener noreferrer">> linkedin</a>
+          </div>
+          <div class="terminal-line ascii-cat" aria-label="ASCII art of a cat" role="img">
+            <span class="cat-line">    |\\__/,|   <span class="cat-tail-char">(</span>\`\\</span>
+            <span class="cat-line">  _.|<span class="cat-eye-char">o o</span>  |_   ) )</span>
+            <span class="cat-line">-(((<span class="cat-tail-char">-</span>--(((-<span class="cat-tail-char">-</span>------</span>
+          </div>
+        </div>
+      `;
+
+      const flash = document.querySelector('.glitch-flash');
+      flash.classList.add('active');
+      
+      setTimeout(() => {
+        document.body.classList.remove('mountain');
+        document.body.classList.add('terminal');
+        _g();
+        initCatAnimation();
+      }, 150);
+
+      setTimeout(() => flash.classList.remove('active'), 600);
+    }
+
+    function initCatAnimation() {
+      const cat = document.querySelector('.ascii-cat');
+      if (!cat) return;
+      
+      cat.addEventListener('mouseenter', () => {
+        // Blink eyes
+        const eyes = cat.querySelectorAll('.cat-eye-char');
+        eyes.forEach(eye => {
+          eye.dataset.original = eye.textContent;
+          let blinkCount = 0;
+          const blinkInterval = setInterval(() => {
+            eye.textContent = eye.textContent === 'o o' ? '- -' : 'o o';
+            blinkCount++;
+            if (blinkCount >= 2) {
+              clearInterval(blinkInterval);
+              eye.textContent = 'o o';
+            }
+          }, 100);
+        });
+        
+        // Flick tail - swap parentheses
+        const tailChars = cat.querySelectorAll('.cat-tail-char');
+        let flickCount = 0;
+        const flickInterval = setInterval(() => {
+          tailChars.forEach(tc => {
+            if (tc.textContent === '(') tc.textContent = ')';
+            else if (tc.textContent === ')') tc.textContent = '(';
+            else if (tc.textContent === '-') tc.textContent = '\\';
+            else if (tc.textContent === '\\') tc.textContent = '-';
+          });
+          flickCount++;
+          if (flickCount >= 4) {
+            clearInterval(flickInterval);
+            // Reset to original
+            const chars = cat.querySelectorAll('.cat-tail-char');
+            chars[0].textContent = '(';
+            chars[1].textContent = '-';
+            chars[2].textContent = '-';
+          }
+        }, 150);
+      });
+    }
+
+    const _o = [
+      atob('ZGVzaWduIHRlY2hub2xvZ2lzdA=='),
+      atob('c2Vhc29uYWwgZGlydGJhZw=='),
+      atob('d2F0Y2hpbmcgaXQgc25vdw=='),
+      atob('U1BSQVQgMSByb3BlIGFjY2VzcyB0ZWNo'),
+      atob('c2tpIHRvd24gY29vaw=='),
+      atob('YnVpbGRpbmcgdGhpbmdzIHRoYXQgd29yaw=='),
+      atob('NCcxMSIgb2YgYmFkIGRlY2lzaW9ucw=='),
+      atob('ZXgtRkFBTkcsIG5vdyBmZXJhbA=='),
+      atob('cHJvZmVzc2lvbmFsIGNvbnRleHQtc3dpdGNoZXI='),
+      atob('Y2FmZmVpbmF0ZWQgYW5kIG9wdGltaXN0aWM=')
+    ];
+
+    let _c = 0;
+    const _gc = '!@#$%^&*_+-=[]{}|;:<>?/~01';
+
+    function _gt(el, txt) {
+      const dur = 500, steps = 10, sd = dur / steps;
+      let s = 0;
+      const iv = setInterval(() => {
+        s++;
+        if (s >= steps) { el.textContent = txt; clearInterval(iv); return; }
+        let g = '';
+        const ml = Math.max(el.textContent.length, txt.length);
+        for (let i = 0; i < ml; i++) {
+          if (Math.random() < (s / steps) * 1.2 && txt[i]) g += txt[i];
+          else if (txt[i]) g += _gc[Math.floor(Math.random() * _gc.length)];
+        }
+        el.textContent = g;
+      }, sd);
+    }
+
+    function _g() {
+      const ge = document.querySelector('.glitch-text');
+      setInterval(() => {
+        _c = (_c + 1) % _o.length;
+        _gt(ge, _o[_c]);
+      }, 3500);
+    }
+  </script>
+  
+  <style>
+    .visually-hidden {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+  </style>
+</body>
+</html>
